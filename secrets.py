@@ -1,0 +1,5 @@
+client_id = "your client id"
+client_secret = "your client secret"
+uri_encoded = "https%3A%2F%2Flocalhost"
+refresh_token = "your refresh token"
+base_64 = "base 64 encoded version of client_id:client_secret"
