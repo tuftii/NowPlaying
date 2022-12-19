@@ -1,81 +1,108 @@
 from requests import get
 from time import sleep
+from secrets import refresh_token
+from refresh import Refresh
 
 
-# Checks the existing track to see if it's changed from what's playing now.
-def check_change():
-    for line in open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r"):
-        nowplaying = get_song()
-        return line != nowplaying
+class NowPlaying:
+    def __init__(self):
+        self.access_token = None
+        self.refresh_token = refresh_token
 
-    return True
+    # Checks the existing track to see if it's changed from what's playing now.
+    def check_change(self):
+        for line in open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r"):
+            nowplaying = self.get_song()
+            return line != nowplaying
 
+        return True
 
-# Gets the currently playing song from Spotify and writes it out to a text file.
-def now_playing():
-    line = get_song()
+    # Gets the currently playing song from Spotify and writes it out to a text file.
+    def now_playing(self):
+        line = self.get_song()
 
-    if line.find("-") == -1:
-        return
+        # Look for hyphen in track name generated from REST call
+        if line.find("-") == -1:
+            return
 
-    # Open the file for writing, truncate (clear) the file, add the Artist - Song found, and close.
-    f = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "a")
-    f.truncate(0)
-    f.write(line)
-    f.close()
+        r = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r")
+        current = r.readline()
 
-    print("Now Playing: " + line)
+        if line == current:
+            return
+        else:
+            r.close()
 
+        # Open the file for writing, truncate (clear) the file, add the Artist - Song found, and close.
+        f = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "a")
+        f.truncate(0)
+        f.write(line)
+        f.close()
 
-# Calls Spotify's REST handler to get the currently playing track, parses out the artists and song.
-def get_song():
-    # Make call to Spotify to get the currently playing track.
-    url = "https://api.spotify.com/v1/me/player/currently-playing"
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer <your token>"
-    }
+        print("Now Playing: " + line)
 
-    # Parse the response
-    response = get(url=url, headers=headers).json()
+    # Calls Spotify's REST handler to get the currently playing track, parses out the artists and song.
+    def get_song(self):
+        # Make call to Spotify to get the currently playing track.
+        url = "https://api.spotify.com/v1/me/player/currently-playing"
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + self.access_token
+        }
 
-    # make a comma separated string of the artists
-    if "item" in response:
-        artists = response['item']['artists']
-        artists_string = ""
-        num_artists = len(artists)
-        count = 0
+        # Parse the response
+        response = get(url=url, headers=headers).json()
 
-        for artist in artists:
-            artists_string += artist['name']
-            count += 1
-            if 1 < num_artists != count:
-                artists_string += ", "
+        # make a comma separated string of the artists
+        if "item" in response:
+            artists = response['item']['artists']
+            artists_string = ""
+            num_artists = len(artists)
+            count = 0
 
-        artists_string.strip()
+            for artist in artists:
+                artists_string += artist['name']
+                count += 1
+                if 1 < num_artists != count:
+                    artists_string += ", "
 
-        # Get the song title from the response
-        song = response['item']['name']
+            artists_string.strip()
 
-        # Build the line for the text file.
-        line = artists_string + " - " + song
+            # Get the song title from the response
+            song = response['item']['name']
 
-        return line
-    elif "error" in response:
-        error1 = "Failed to get song from Spotify"
-        print(error1)
-        return error1
-    else:
-        error2 = "Something weird idk."
-        print(error2)
-        return error2
+            # Build the line for the text file.
+            line = artists_string + " - " + song
+
+            return line
+        elif "error" in response:
+            error1 = "Failed to get song from Spotify"
+            print(error1)
+            return error1
+        else:
+            error2 = "Something weird idk."
+            print(error2)
+            return error2
+
+    def call_refresh(self):
+        refreshCaller = Refresh()
+        self.access_token = refreshCaller.refresh()
 
 
 # Main runner.
 if __name__ == '__main__':
+    np = NowPlaying()
+    np.call_refresh()
+    refresh_time = 0
+
     while True:
-        change = check_change()
+        change = np.check_change()
         if change:
-            now_playing()
-        sleep(5)
+            np.now_playing()
+        refresh_time += 10
+        sleep(10)
+
+        if refresh_time > 3000:
+            np.call_refresh()
+            refresh_time = 0
