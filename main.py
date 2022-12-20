@@ -52,11 +52,18 @@ class NowPlaying:
         }
 
         # Parse the response
-        response = get(url=url, headers=headers).json()
+        response = get(url=url, headers=headers)
+
+        if response.status_code == 204:
+            error0 = "No song playing"
+            print(error0)
+            return error0
+
+        response_json = response.json()
 
         # make a comma separated string of the artists
-        if "item" in response:
-            artists = response['item']['artists']
+        if "item" in response_json:
+            artists = response_json['item']['artists']
             artists_string = ""
             num_artists = len(artists)
             count = 0
@@ -70,13 +77,13 @@ class NowPlaying:
             artists_string.strip()
 
             # Get the song title from the response
-            song = response['item']['name']
+            song = response_json['item']['name']
 
             # Build the line for the text file.
             line = artists_string + " - " + song
 
             return line
-        elif "error" in response:
+        elif "error" in response_json:
             error1 = "Failed to get song from Spotify"
             print(error1)
             return error1
