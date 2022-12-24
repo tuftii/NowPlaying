@@ -6,6 +6,6 @@ class Wiki:
 
         line = "*" + artist + " - " + song + " {{SpotifyTextLink |# = track/" + spotify_uri + "}}\n"
 
-        f = open(self.filename, "a")
+        f = open(self.filename, mode="a", encoding="utf-8")
         f.write(line)
         f.close()

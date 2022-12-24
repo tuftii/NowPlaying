@@ -16,7 +16,7 @@ class NowPlaying:
 
     # Checks the existing track to see if it's changed from what's playing now.
     def check_change(self):
-        for line in open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r"):
+        for line in open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r", encoding="utf-8"):
             nowplaying = self.get_song()
 
             if nowplaying.find("-") < 0:
@@ -34,7 +34,7 @@ class NowPlaying:
         if line.find("-") == -1:
             return
 
-        r = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r")
+        r = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r", encoding="utf-8")
         current = r.readline()
 
         if line == current:
@@ -43,7 +43,7 @@ class NowPlaying:
             r.close()
 
         # Open the file for writing, truncate (clear) the file, add the Artist - Song found, and close.
-        f = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "a")
+        f = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "a", encoding="utf-8")
         f.truncate(0)
         f.write(line)
         f.close()
@@ -123,8 +123,8 @@ if __name__ == '__main__':
         if change:
             np.now_playing()
             wiki.write_line(np.artist, np.song, np.uri)
-        refresh_time += 10
-        sleep(10)
+        refresh_time += 1
+        sleep(1)
 
         if refresh_time > 3000:
             np.call_refresh()
