@@ -123,8 +123,8 @@ if __name__ == '__main__':
         if change:
             np.now_playing()
             wiki.write_line(np.artist, np.song, np.uri)
-        refresh_time += 1
-        sleep(1)
+        refresh_time += 10
+        sleep(10)
 
         if refresh_time > 3000:
             np.call_refresh()
