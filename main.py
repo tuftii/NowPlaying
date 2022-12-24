@@ -19,7 +19,7 @@ class NowPlaying:
         for line in open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r"):
             nowplaying = self.get_song()
 
-            if nowplaying == "No song playing":
+            if nowplaying.find("-") < 0:
                 return False
             else:
                 return line != nowplaying
