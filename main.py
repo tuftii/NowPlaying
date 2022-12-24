@@ -2,12 +2,17 @@ from requests import get
 from time import sleep
 from secrets import refresh_token
 from refresh import Refresh
+from wiki import Wiki
+from datetime import date
 
 
 class NowPlaying:
     def __init__(self):
         self.access_token = None
         self.refresh_token = refresh_token
+        self.artist = ""
+        self.song = ""
+        self.uri = ""
 
     # Checks the existing track to see if it's changed from what's playing now.
     def check_change(self):
@@ -68,23 +73,26 @@ class NowPlaying:
         # make a comma separated string of the artists
         if "item" in response_json:
             artists = response_json['item']['artists']
-            artists_string = ""
             num_artists = len(artists)
             count = 0
+            self.artist = ""
 
             for artist in artists:
-                artists_string += artist['name']
+                self.artist += artist['name']
                 count += 1
                 if 1 < num_artists != count:
-                    artists_string += ", "
+                    self.artist += ", "
 
-            artists_string.strip()
+            self.artist.strip()
 
             # Get the song title from the response
-            song = response_json['item']['name']
+            self.song = response_json['item']['name']
+
+            # Get the spotify id from the response
+            self.uri = response_json['item']['id']
 
             # Build the line for the text file.
-            line = artists_string + " - " + song
+            line = self.artist + " - " + self.song
 
             return line
         elif "error" in response_json:
@@ -103,6 +111,9 @@ class NowPlaying:
 
 # Main runner.
 if __name__ == '__main__':
+    filename = "C:\\Users\\Claire\\CGR\\Wiki" + date.today().strftime("%d-%m-%Y") + ".TXT"
+    wiki = Wiki(filename)
+
     np = NowPlaying()
     np.call_refresh()
     refresh_time = 0
@@ -111,6 +122,7 @@ if __name__ == '__main__':
         change = np.check_change()
         if change:
             np.now_playing()
+            wiki.write_line(np.artist, np.song, np.uri)
         refresh_time += 10
         sleep(10)
 
