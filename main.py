@@ -18,7 +18,11 @@ class NowPlaying:
     def check_change(self):
         for line in open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r"):
             nowplaying = self.get_song()
-            return line != nowplaying
+
+            if nowplaying == "No song playing":
+                return False
+            else:
+                return line != nowplaying
 
         return True
 
