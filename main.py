@@ -30,8 +30,8 @@ class NowPlaying:
     def now_playing(self):
         line = self.get_song()
 
-        # Look for hyphen in track name generated from REST call
         if line.find("-") == -1:
+            # Look for hyphen in track name generated from REST call
             return
 
         r = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "r", encoding="utf-8")
@@ -70,8 +70,8 @@ class NowPlaying:
 
         response_json = response.json()
 
-        # make a comma separated string of the artists
-        if "item" in response_json:
+        if "item" in response_json and response_json['is_playing'] is True:
+            # make a comma separated string of the artists
             artists = response_json['item']['artists']
             num_artists = len(artists)
             count = 0
@@ -95,6 +95,10 @@ class NowPlaying:
             line = self.artist + " - " + self.song
 
             return line
+        elif response_json['is_playing'] is False:
+            error0 = "No song playing"
+            print(error0)
+            return error0
         elif "error" in response_json:
             error1 = "Failed to get song from Spotify"
             print(error1)
