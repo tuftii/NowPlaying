@@ -95,7 +95,7 @@ class NowPlaying:
             line = self.artist + " - " + self.song
 
             return line
-        elif response_json['is_playing'] is False:
+        elif "is_playing" in response_json and response_json['is_playing'] is False:
             error0 = "No song playing"
             print(error0)
             return error0
