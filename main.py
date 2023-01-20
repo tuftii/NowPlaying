@@ -115,6 +115,10 @@ class NowPlaying:
 
 # Main runner.
 if __name__ == '__main__':
+    f = open("C:\\Users\\Claire\\CGR\\NowPlaying.TXT", "a", encoding="utf-8")
+    f.truncate(0)
+    f.close()
+
     filename = "C:\\Users\\Claire\\CGR\\Wiki" + date.today().strftime("%d-%m-%Y") + ".TXT"
     wiki = Wiki(filename)
 
